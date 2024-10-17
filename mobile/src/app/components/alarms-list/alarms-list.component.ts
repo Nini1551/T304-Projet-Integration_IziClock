@@ -26,6 +26,19 @@ export class AlarmsListComponent implements OnInit {
     });
   }
 
+  toggleValue: boolean = false;
+
+  onToggleChanged(event: any) {
+    this.toggleValue = event.detail.checked;  // Met à jour la valeur du toggle
+
+    // Ajoutez ici la logique à exécuter lorsque le toggle change
+    if (this.toggleValue) {
+      console.log(event);
+    } else {
+      console.log('Le toggle est désactivé');
+    }
+  }
+
   ngOnInit() {
     this.setAlarms();
   }

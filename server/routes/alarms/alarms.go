@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"server/initializers"
 	"server/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,7 @@ func Routes(route *gin.Engine) {
 	alarms := route.Group("/alarms")
 	{
 		alarms.GET("", get_alarms)
+		alarms.PUT("/:id", update_alarms)
 	}
 }
 
@@ -30,4 +32,32 @@ func get_alarms(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, alarms)
+}
+
+func update_alarms(context *gin.Context) {
+	idParam := context.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid alarm ID"})
+		return
+	}
+
+	var alarm models.Alarm
+	if err := initializers.DB.First(&alarm, id).Error; err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"error": "Alarm not found"})
+		return
+	}
+
+	if err := context.ShouldBindJSON(&alarm); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := initializers.DB.Save(&alarm).Error; err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, alarm)
 }

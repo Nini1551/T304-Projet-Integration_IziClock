@@ -2,5 +2,6 @@
   <ion-card-header>
     <ion-card-title>{{ alarm?.name }}</ion-card-title>
     <ion-card-subtitle>{{ alarm?.ringDate | ringdate }}</ion-card-subtitle>
+    <ion-toggle [(ngModel)]="toggleValue" (ionChange)="onToggleChanged($event)"></ion-toggle>
   </ion-card-header>
 </ion-card>
